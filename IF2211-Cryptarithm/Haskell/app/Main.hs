@@ -74,7 +74,7 @@ evaluateToPrimitive expr solution = case expr of
 evaluate :: CryptarithmExpression -> BruteForceSolutionState -> Bool
 evaluate expr solution = case evaluateToPrimitive expr solution of
     BoolExpression b -> b
-    IntExpression _  -> error "explode"
+    IntExpression _  -> error "Explode"
 
 
 
@@ -83,7 +83,7 @@ bruteForce :: NonEmpty String -> [BruteForceSolutionState]
 bruteForce problem =
         Data.List.filter (evaluate cryptarithmExpr) solutionSpace
     where
-        originalSet = Data.Set.fromList . Data.List.map toLower <$> problem
+        originalSet     = Data.Set.fromList . Data.List.map toLower <$> problem
         uniqueCharList  = Data.Set.toList $ Data.List.foldl' Data.Set.union Data.Set.empty originalSet
         cryptarithmExpr = constructExpression problem
         solutionSpaceEnumerator (c:listTail) = [subTree `Data.Map.union` Data.Map.singleton c i | subTree <- solutionSpaceEnumerator listTail, i <- [0..9]]
@@ -96,7 +96,7 @@ pBruteForce :: NonEmpty String -> [Bool]
 pBruteForce problem =
         Data.List.filter id $ parMap rpar (evaluate cryptarithmExpr) solutionSpace
     where
-        originalSet = Data.Set.fromList . Data.List.map toLower <$> problem
+        originalSet     = Data.Set.fromList . Data.List.map toLower <$> problem
         uniqueCharList  = Data.Set.toList $ Data.List.foldl' Data.Set.union Data.Set.empty originalSet
         cryptarithmExpr = constructExpression problem
         solutionSpaceEnumerator (c:listTail) = [subTree `Data.Map.union` Data.Map.singleton c i | subTree <- solutionSpaceEnumerator listTail, i <- [0..9]]
