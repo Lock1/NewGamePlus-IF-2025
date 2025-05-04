@@ -1,15 +1,11 @@
 import java.io.IO;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
-import java.util.function.IntBinaryOperator;
-import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -181,7 +177,9 @@ enum BruteForce {
         }
 
         var pair = LocalScope.preprocess(source);
-        var solutionCount = pair.left.filter(sol -> pair.right.evaluate(sol) instanceof CryptarithmExpression.CryptarithmValue.Boolean(boolean b) ? b : false)
+        var solutionCount = pair.left
+            .parallel()
+            .filter(sol -> pair.right.evaluate(sol) instanceof CryptarithmExpression.CryptarithmValue.Boolean(boolean b) ? b : false)
             .map(Debugger::arraySucks)
             .collect(Collectors.counting());
         IO.println("Solution count: " + solutionCount);
@@ -223,6 +221,14 @@ enum BruteForce {
 
 
 void main() {
-    List<String> sampleProblem = List.of("COCA", "COLA", "OASIS");
+    // List<String> sampleProblem = List.of("COCA", "COLA", "OASIS"); // Solution count: 18967
+    // Serial Stream: ./run.sh  3.56s user 0.71s system 271% cpu 1.573 total
+    // Parallel Stream: ./run.sh  4.50s user 0.88s system 421% cpu 1.274 total
+
+    List<String> sampleProblem = List.of("DOUBLE", "DOUBLE", "TOIL", "TROUBLE"); // Solution count: 28860
+    // Serial Stream: ./run.sh  321.35s user 4.45s system 102% cpu 5:17.91 total
+    // Parallel Stream: ./run.sh  1291.65s user 6.56s system 966% cpu 2:14.28 total (!! 2x with non-tuned JVM)
+    // Parallel & Huge Page: ./run.sh  1305.01s user 14.59s system 962% cpu 2:17.16 total
+        // C: hmm, within same range of non-memory tuning, I guess it's more CPU bound or maybe IO-stall
     BruteForce.execute(sampleProblem);
 }

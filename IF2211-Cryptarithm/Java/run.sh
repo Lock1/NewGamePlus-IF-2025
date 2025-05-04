@@ -1,1 +1,1 @@
-java --source 24 --enable-preview Main.java
+java --source 24 --enable-preview -Xms12G -Xms16G -XX:+UseLargePages -XX:+UseTransparentHugePages -XX:LargePageSizeInBytes=1g Main.java
