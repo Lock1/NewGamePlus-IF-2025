@@ -4,6 +4,7 @@ import Data.Map
 import Data.List
 import Data.Char
 import Data.List.NonEmpty
+-- import Control.Parallel
 import Prelude hiding ((^))
 import qualified Prelude ((^))
 
@@ -93,8 +94,8 @@ bruteForce problem =
 
 
 sampleProblem :: NonEmpty String
--- sampleProblem = Data.List.NonEmpty.fromList ["NO", "GUN", "NO", "HUNT"] -- "100" ./a  0.38s user 0.01s system 99% cpu 0.393 total
-sampleProblem = Data.List.NonEmpty.fromList ["CROSS", "ROADS", "DANGER"]
+sampleProblem = Data.List.NonEmpty.fromList ["NO", "GUN", "NO", "HUNT"] -- "100" ./a  0.38s user 0.01s system 99% cpu 0.393 total
+-- sampleProblem = Data.List.NonEmpty.fromList ["CROSS", "ROADS", "DANGER"]
 
 main :: IO ()
 main = print . show . Data.List.length . bruteForce $ sampleProblem
