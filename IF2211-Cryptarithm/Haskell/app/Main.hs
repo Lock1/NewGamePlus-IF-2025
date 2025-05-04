@@ -120,7 +120,7 @@ sampleProblem :: NonEmpty String
 -- TBD, OOM
 
 sampleProblem = Data.List.NonEmpty.fromList ["HERE", "SHE", "COMES"]
--- "100" cabal new-run Haskell -- par 16 +RTS -N16  43.92s user 3.23s system 650% cpu 7.243 total
+-- "100" cabal new-run Haskell -O2 -- par 16 +RTS -N16  38.52s user 3.46s system 610% cpu 6.871 total
 
 main :: IO ()
 main = print . show . Data.List.length . pBruteForce $ sampleProblem
