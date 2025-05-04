@@ -4,7 +4,7 @@ import Data.Map
 import Data.List
 import Data.Char
 import Data.List.NonEmpty
--- import Control.Parallel
+import Control.Parallel.Strategies
 import Prelude hiding ((^))
 import qualified Prelude ((^))
 
@@ -43,7 +43,7 @@ constructEvaluableExpression str = let reverseLowerStr =  Data.List.reverse $ to
 
 
 
-constructExpression :: Data.List.NonEmpty.NonEmpty String -> CryptarithmExpression -- Contract: At least 3 elements
+constructExpression :: NonEmpty String -> CryptarithmExpression -- Contract: At least 3 elements
 constructExpression ls = let
     constantExprList = constructEvaluableExpression <$> ls
     in EqualityExpression {
@@ -79,7 +79,7 @@ evaluate expr solution = case evaluateToPrimitive expr solution of
 
 
 
-bruteForce :: Data.List.NonEmpty.NonEmpty String -> [BruteForceSolutionState]
+bruteForce :: NonEmpty String -> [BruteForceSolutionState]
 bruteForce problem =
         Data.List.filter (evaluate cryptarithmExpr) solutionSpace
     where
@@ -92,10 +92,35 @@ bruteForce problem =
 
 
 
+pBruteForce :: NonEmpty String -> [Bool]
+pBruteForce problem =
+        Data.List.filter id $ parMap rpar (evaluate cryptarithmExpr) solutionSpace
+    where
+        originalSet = Data.Set.fromList . Data.List.map toLower <$> problem
+        uniqueCharList  = Data.Set.toList $ Data.List.foldl' Data.Set.union Data.Set.empty originalSet
+        cryptarithmExpr = constructExpression problem
+        solutionSpaceEnumerator (c:listTail) = [subTree `Data.Map.union` Data.Map.singleton c i | subTree <- solutionSpaceEnumerator listTail, i <- [0..9]]
+        solutionSpaceEnumerator [] = [Data.Map.empty]
+        solutionSpace = solutionSpaceEnumerator uniqueCharList
+
 
 sampleProblem :: NonEmpty String
-sampleProblem = Data.List.NonEmpty.fromList ["NO", "GUN", "NO", "HUNT"] -- "100" ./a  0.38s user 0.01s system 99% cpu 0.393 total
+-- sampleProblem = Data.List.NonEmpty.fromList ["NO", "GUN", "NO", "HUNT"] 
+-- "100" ./a  0.38s user 0.01s system 99% cpu 0.393 total
+-- "100" cabal new-run Haskell -- par 16 +RTS -N16  4.94s user 0.44s system 648% cpu 0.829 total
+
 -- sampleProblem = Data.List.NonEmpty.fromList ["CROSS", "ROADS", "DANGER"]
+-- TBD, OOM
+
+-- sampleProblem = Data.List.NonEmpty.fromList ["EAT", "THAT", "APPLE"]
+-- "10" cabal new-run Haskell -- par 16 +RTS -N16  3.93s user 0.36s system 677% cpu 0.633 total
+
+-- sampleProblem = Data.List.NonEmpty.fromList ["DOUBLE", "DOUBLE", "TOIL", "TROUBLE"]
+-- sampleProblem = Data.List.NonEmpty.fromList ["CROSS", "ROADS", "DANGER"]
+-- TBD, OOM
+
+sampleProblem = Data.List.NonEmpty.fromList ["HERE", "SHE", "COMES"]
+-- "100" cabal new-run Haskell -- par 16 +RTS -N16  43.92s user 3.23s system 650% cpu 7.243 total
 
 main :: IO ()
-main = print . show . Data.List.length . bruteForce $ sampleProblem
+main = print . show . Data.List.length . pBruteForce $ sampleProblem

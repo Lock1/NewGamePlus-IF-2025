@@ -21,11 +21,11 @@ build-type:         Simple
 extra-doc-files:    CHANGELOG.md
 
 common warnings
-    ghc-options: -Wall
+    ghc-options: -Wall -threaded -rtsopts
 
 executable Haskell
     import:           warnings
     main-is:          Main.hs
-    build-depends:    base >= 4.20, containers >= 0.7, parallel >= 3.2
+    build-depends:    base >= 4.18, containers >= 0.7, parallel >= 3.2
     hs-source-dirs:   app
     default-language: GHC2021
