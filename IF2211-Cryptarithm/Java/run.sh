@@ -1,0 +1,1 @@
+java --source 24 --enable-preview Main.java
